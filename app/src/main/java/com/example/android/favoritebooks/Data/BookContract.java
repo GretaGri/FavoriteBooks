@@ -17,6 +17,4 @@ public class BookContract {
         public static final String COLUMN_SUPPLIER_PHONE_NUMBER = "Supplier_phone_number";
         public static final String COLUMN_PRODUCT_DESCRIPTION = "Product_description";
     }
-
-
 }

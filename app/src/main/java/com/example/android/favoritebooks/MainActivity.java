@@ -4,20 +4,20 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.android.favoritebooks.Data.BookContract;
 import com.example.android.favoritebooks.Data.BookContract.BookEntry;
 import com.example.android.favoritebooks.Data.BookDbHelper;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
     private BookDbHelper DbHelper;
 
     @Override
@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
             //
             // In the while loop below, iterate through the rows of the cursor and display
             // the information from each column in this order.
-            displayView.setText("The books table contains " + cursor.getCount() + " books.\n\n");
+            String tableContains = getString(R.string.table_contains, cursor.getCount());
+            displayView.setText(tableContains);
             displayView.append(BookEntry._ID + " - " +
                     BookEntry.COLUMN_PRODUCT + " - " + BookEntry.COLUMN_PRODUCT_DESCRIPTION + " - " +
                     BookEntry.COLUMN_PRICE + " - " + BookEntry.COLUMN_QUANTITY + " - " +
@@ -122,16 +123,16 @@ public class MainActivity extends AppCompatActivity {
 
         //Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(BookEntry.COLUMN_PRODUCT, "The Fault In Our Stars");
-        values.put(BookEntry.COLUMN_PRODUCT_DESCRIPTION, "John Green. Love and pain");
+        values.put(BookEntry.COLUMN_PRODUCT, getString(R.string.fault_in_stars));
+        values.put(BookEntry.COLUMN_PRODUCT_DESCRIPTION, getString(R.string.description_fault_in_stars));
         values.put(BookEntry.COLUMN_PRICE, 1000);
         values.put(BookEntry.COLUMN_QUANTITY, 1);
-        values.put(BookEntry.COLUMN_SUPPLIER_NAME, "Alma littera");
+        values.put(BookEntry.COLUMN_SUPPLIER_NAME, getString(R.string.supplier_fault_in_stars));
         values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, 23450);
 
         //Insert a new row, returning the primary key value of the new row.
         long newRowId = db.insert(BookEntry.TABLE_NAME, null, values);
-        Log.d("MainActivity", "Dummy values inserted: " + newRowId);
+        Log.d(LOG_TAG, getString(R.string.log_dummy_values) + newRowId);
     }
 
 
