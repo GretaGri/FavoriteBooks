@@ -25,4 +25,17 @@
     <string name="error_saving_data">Error with saving products</string>
     <string name="product_saved">Product saved with id %1$d</string>
     <string name="cont_desc_editor_book">Flowers and open book</string>
+    <string name="where_are_books">Where are my favorite books?</string>
+    <string name="add_a_book">Get started by adding a book</string>
+    <string name="buy">Buy</string>
+    <string name="in_stock">In stock: %1$d</string>
+    <string name="price">Price: %1$s</string>
+    <string name="button_add_image">Add image</string>
+    <string name="enter_phone">Please, enter the phone number</string>
+    <string name="select_picture">Select Picture</string>
+    <string name="delete_all_dialog_msg">Delete all books?</string>
+    <string name="cancel">Cancel</string>
+    <string name="main_delete_books_successful">All books deleted</string>
+    <string name="main_delete_books_failed">Error with deleting books</string>
+    <string name="default_image">default</string>
 </resources>

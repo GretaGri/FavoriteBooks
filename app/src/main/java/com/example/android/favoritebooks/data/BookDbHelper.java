@@ -1,11 +1,11 @@
-package com.example.android.favoritebooks.Data;
+package com.example.android.favoritebooks.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.android.favoritebooks.Data.BookContract.BookEntry;
+import com.example.android.favoritebooks.data.BookContract.BookEntry;
 
 /**
  * Created by Greta Grigutė on 2018-06-13.
@@ -22,7 +22,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             BookEntry.COLUMN_QUANTITY + " INTEGER DEFAULT 1, " +
             BookEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, " +
             BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER + " LONG" +
-            ")";
+            BookEntry.COLUMN_PRODUCT_IMAGE_URI + " TEXT DEFAULT 'default'" + ")";
 
 
     //Constructor

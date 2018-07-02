@@ -1,167 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".EditorActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_view_product_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:padding="@dimen/text_padding"
+                    android:text="@string/product_name"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/edit_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/text_padding"
+                    android:layout_marginRight="@dimen/text_padding"
+                    android:hint="@string/name_hint"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/text_size_editor" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/text_view_product_name"
+                android:id="@+id/text_view_product_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="serif"
                 android:padding="@dimen/text_padding"
-                android:text="@string/product_name"
+                android:text="@string/product_description"
                 android:textSize="@dimen/text_size" />
 
             <EditText
-                android:id="@+id/edit_name"
+                android:id="@+id/edit_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/text_padding"
+                android:layout_marginLeft="@dimen/text_padding"
                 android:layout_marginRight="@dimen/text_padding"
-                android:hint="@string/name_hint"
-                android:inputType="textCapWords"
+                android:layout_marginStart="@dimen/text_padding"
+                android:hint="@string/product_description_hint"
+                android:inputType="text"
                 android:textSize="@dimen/text_size_editor" />
-        </LinearLayout>
 
-        <TextView
-            android:id="@+id/text_view_product_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="serif"
-            android:padding="@dimen/text_padding"
-            android:text="@string/product_description"
-            android:textSize="@dimen/text_size" />
-
-        <EditText
-            android:id="@+id/edit_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/text_padding"
-            android:layout_marginLeft="@dimen/text_padding"
-            android:layout_marginRight="@dimen/text_padding"
-            android:layout_marginStart="@dimen/text_padding"
-            android:hint="@string/product_description_hint"
-            android:inputType="text"
-            android:textSize="@dimen/text_size_editor" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_view_price"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_view_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:padding="@dimen/text_padding"
+                    android:text="@string/price_ct"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/edit_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/text_padding"
+                    android:layout_marginRight="@dimen/text_padding"
+                    android:hint="@string/product_price_hint"
+                    android:inputType="number"
+                    android:textSize="@dimen/text_size_editor" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_view_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:padding="@dimen/text_padding"
+                    android:text="@string/quantity"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/edit_quantity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:layout_marginEnd="@dimen/text_padding"
+                    android:layout_marginRight="@dimen/text_padding"
+                    android:hint="@string/quantity_hint"
+                    android:inputType="number"
+                    android:textSize="@dimen/text_size_editor" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin_small"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/button_increase"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/baseline_arrow_drop_up_black_36"/>
+
+                    <ImageView
+                        android:id="@+id/button_decrease"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/baseline_arrow_drop_down_black_36"
+                        android:layout_gravity="center"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/text_view_supplier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:padding="@dimen/text_padding"
+                    android:text="@string/supplier_name"
+                    android:textSize="@dimen/text_size" />
+
+                <EditText
+                    android:id="@+id/edit_supplier"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/text_padding"
+                    android:layout_marginRight="@dimen/text_padding"
+                    android:hint="@string/supplier_name_hint"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/text_size_editor" />
+            </LinearLayout>
+
+
+
+                <TextView
+                    android:id="@+id/text_view_supplier_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:padding="@dimen/text_padding"
+                    android:text="@string/supplier_phone_number"
+                    android:textSize="@dimen/text_size" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edit_phone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginStart="@dimen/text_padding"
+                    android:layout_marginLeft="@dimen/text_padding"
+                    android:layout_gravity="bottom"
+                    android:hint="@string/use_only_numbers"
+                    android:inputType="phone"
+                    android:textSize="@dimen/text_size_editor" />
+
+                    <ImageView
+                    android:id="@+id/button_call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                        android:focusable="true"
+                        android:clickable="true"
+                    android:src="@drawable/baseline_local_phone_black_48"
+                    android:paddingLeft="@dimen/padding_small"
+                    android:paddingStart="@dimen/padding_small"
+                    android:paddingBottom="@dimen/padding_small"
+                    android:paddingRight="@dimen/padding_small"
+                    android:paddingEnd="@dimen/padding_small"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button_pick_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_small"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/button_add_image"
+                android:textStyle="bold"
                 android:fontFamily="serif"
-                android:padding="@dimen/text_padding"
-                android:text="@string/price_ct"
-                android:textSize="@dimen/text_size" />
+                android:textColor="@color/colorTextButton"
+                />
 
-            <EditText
-                android:id="@+id/edit_price"
+            <ImageView
+                android:id="@+id/book_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/text_padding"
-                android:layout_marginRight="@dimen/text_padding"
-                android:hint="@string/product_price_hint"
-                android:inputType="number"
-                android:textSize="@dimen/text_size_editor" />
+                android:contentDescription="@string/cont_desc_editor_book"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_book_nathan_dumlao_unsplash"
+                android:tint="@color/colorBackground" />
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_view_quantity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="serif"
-                android:padding="@dimen/text_padding"
-                android:text="@string/quantity"
-                android:textSize="@dimen/text_size" />
-
-            <EditText
-                android:id="@+id/edit_quantity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/text_padding"
-                android:layout_marginRight="@dimen/text_padding"
-                android:hint="@string/quantity_hint"
-                android:inputType="number"
-                android:textSize="@dimen/text_size_editor" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_view_supplier"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="serif"
-                android:padding="@dimen/text_padding"
-                android:text="@string/supplier_name"
-                android:textSize="@dimen/text_size" />
-
-            <EditText
-                android:id="@+id/edit_supplier"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/text_padding"
-                android:layout_marginRight="@dimen/text_padding"
-                android:hint="@string/supplier_name_hint"
-                android:inputType="textCapWords"
-                android:textSize="@dimen/text_size_editor" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_view_supplier_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="serif"
-                android:padding="@dimen/text_padding"
-                android:text="@string/supplier_phone_number"
-                android:textSize="@dimen/text_size" />
-
-            <EditText
-                android:id="@+id/edit_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/text_padding"
-                android:layout_marginRight="@dimen/text_padding"
-                android:hint="@string/use_only_numbers"
-                android:inputType="phone"
-                android:textSize="@dimen/text_size_editor" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/cont_desc_editor_book"
-            android:scaleType="centerCrop"
-            android:src="@drawable/default_book_nathan_dumlao_unsplash"
-            android:tint="@color/colorBackground" />
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</layout>

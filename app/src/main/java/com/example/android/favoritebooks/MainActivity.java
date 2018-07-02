@@ -1,33 +1,47 @@
 package com.example.android.favoritebooks;
 
+import android.app.AlertDialog;
+import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
-import com.example.android.favoritebooks.Data.BookContract.BookEntry;
-import com.example.android.favoritebooks.Data.BookDbHelper;
+import com.example.android.favoritebooks.data.BookContract.BookEntry;
+import com.example.android.favoritebooks.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private BookDbHelper DbHelper;
+
+    private static final int LOADER_ID = 0;
+
+    private BookCursorAdapter bookAdapter;
+
+    private ActivityMainBinding binding;
+
+    // Defines a new Uri object that receives the result of the insertion
+    private Uri newUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         // Setup FAB to open EditorActivity
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+       binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
@@ -35,91 +49,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        DbHelper = new BookDbHelper(this);
+        binding.listViewBooks.setEmptyView(binding.emptyView);
 
-        // calling helper method to display information in the onscreen TextView about the state of
-        // the books database.
-        displayDatabaseInfo();
-    }
+        // Setup cursor adapter using cursor
+        bookAdapter = new BookCursorAdapter(this,null);
 
-    private void displayDatabaseInfo() {
+        // Attach cursor adapter to the ListView
+       binding.listViewBooks.setAdapter(bookAdapter);
 
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = DbHelper.getReadableDatabase();
-
-        String[] projection = {BookEntry._ID,
-                BookEntry.COLUMN_PRODUCT,
-                BookEntry.COLUMN_PRODUCT_DESCRIPTION,
-                BookEntry.COLUMN_PRICE,
-                BookEntry.COLUMN_QUANTITY,
-                BookEntry.COLUMN_SUPPLIER_NAME,
-                BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER};
-
-        // Perform this raw SQL query "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.query(BookEntry.TABLE_NAME, projection, null, null, null, null, null);
-        TextView displayView = findViewById(R.id.text_view_books);
-
-        try {
-            // Create a header in the Text View that looks like this:
-            //
-            // The pets table contains <number of rows in Cursor> pets.
-            // _id - product - description - price - quantity - supplier - supplier phone
-            //
-            // In the while loop below, iterate through the rows of the cursor and display
-            // the information from each column in this order.
-            String tableContains = getString(R.string.table_contains, cursor.getCount());
-            displayView.setText(tableContains);
-            displayView.append(BookEntry._ID + " - " +
-                    BookEntry.COLUMN_PRODUCT + " - " + BookEntry.COLUMN_PRODUCT_DESCRIPTION + " - " +
-                    BookEntry.COLUMN_PRICE + " - " + BookEntry.COLUMN_QUANTITY + " - " +
-                    BookEntry.COLUMN_SUPPLIER_NAME + " - " + BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER + "\n");
-
-            // Figure out the index of each column
-            int idColumnIndex = cursor.getColumnIndex(BookEntry._ID);
-            int productColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT);
-            int descriptionColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRODUCT_DESCRIPTION);
-            int priceColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_QUANTITY);
-            int supplierColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_SUPPLIER_NAME);
-            int phoneColumnIndex = cursor.getColumnIndex(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER);
-
-            // Iterate through all the returned rows in the cursor
-            while (cursor.moveToNext()) {
-                // Use that index to extract the String or Int value of the word
-                // at the current row the cursor is on.
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentProduct = cursor.getString(productColumnIndex);
-                String currentDescription = cursor.getString(descriptionColumnIndex);
-                int currentPrice = cursor.getInt(priceColumnIndex);
-                int currentQuantity = cursor.getInt(quantityColumnIndex);
-                String currentSupplier = cursor.getString(supplierColumnIndex);
-                long currentPhone = cursor.getLong(phoneColumnIndex);
-
-                // Display the values from each column of the current row in the cursor in the TextView
-                displayView.append(("\n" + currentID + " - " +
-                        currentProduct + " - " + currentDescription + " - " + currentPrice + " - " +
-                        currentQuantity + " - " + currentSupplier + " - " + currentPhone));
+        binding.listViewBooks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent openEditorActivity = new Intent(MainActivity.this, EditorActivity.class);
+                Uri itemUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
+                openEditorActivity.setData(itemUri);
+                startActivity(openEditorActivity);
             }
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
-        }
-    }
+        });
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        displayDatabaseInfo();
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     private void insertBook() {
-        //Gets the data repository in write mode
-        SQLiteDatabase db = DbHelper.getWritableDatabase();
-
 
         //Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -129,10 +82,11 @@ public class MainActivity extends AppCompatActivity {
         values.put(BookEntry.COLUMN_QUANTITY, 1);
         values.put(BookEntry.COLUMN_SUPPLIER_NAME, getString(R.string.supplier_fault_in_stars));
         values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, 23450);
+        values.put(BookEntry.COLUMN_PRODUCT_IMAGE_URI, getString(R.string.default_image));
 
-        //Insert a new row, returning the primary key value of the new row.
-        long newRowId = db.insert(BookEntry.TABLE_NAME, null, values);
-        Log.d(LOG_TAG, getString(R.string.log_dummy_values) + newRowId);
+        newUri = getContentResolver().insert(
+                BookEntry.CONTENT_URI,   // the books table content URI
+                values);                        // the values to insert
     }
 
 
@@ -151,13 +105,77 @@ public class MainActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertBook();
-                displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                deleteAll();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAll(){
+        showDeleteConfirmationDialog();
+    }
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the books.
+                int mRowsDeleted = getContentResolver().delete(
+                        BookEntry.CONTENT_URI,   // the content URI
+                        null, // the column to select on
+                        null // the value to compare to
+                );
+
+                if (mRowsDeleted == 0) {
+                    // If the new content URI is null, then there was an error with insertion.
+                    Toast.makeText(MainActivity.this, R.string.main_delete_books_failed, Toast.LENGTH_LONG).show();
+                } else {
+                    // Otherwise, the insertion was successful and we can display a toast.
+                    Toast.makeText(MainActivity.this, R.string.main_delete_books_successful,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the pet.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+     //   String [] projection = {BookEntry._ID,
+      //          BookEntry.COLUMN_PRODUCT,
+     //           BookEntry.COLUMN_PRICE,
+       //         BookEntry.COLUMN_QUANTITY,
+      //          BookEntry.COLUMN_PRODUCT_IMAGE_URI};
+
+    //    return new CursorLoader(this, BookEntry.CONTENT_URI,
+      //          projection, null, null, null);
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+       // bookAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+       // bookAdapter.swapCursor(null);
     }
 }
