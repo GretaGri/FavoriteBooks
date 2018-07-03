@@ -53,25 +53,28 @@ public class BookCursorAdapter extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         // Fill out this method
         // Find fields to populate in inflated template
-        TextView textViewBookTitle = view.findViewById(R.id.text_view_product_name);
+        TextView textViewBookTitle = view.findViewById(R.id.text_view_book_title);
         TextView textViewPrice = view.findViewById(R.id.text_view_price);
         TextView textViewQuantity = view.findViewById(R.id.text_view_in_stock);
-        imageViewProduct = view.findViewById(R.id.book_image);
+        imageViewProduct = view.findViewById(R.id.list_item_image);
         // Extract properties from cursor
         String bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT));
         Integer price = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRICE));
         Double priceToShow = (double)price/100;
         Integer quantity = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
         String stringUriImage = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_IMAGE_URI));
-        if (stringUriImage.equals(context.getString(R.string.default_image))){
-           imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
-        }else uriImage = Uri.parse(stringUriImage);
 
         // Populate fields with extracted properties
+        if (stringUriImage != null && !stringUriImage.equals(context.getString(R.string.default_image))){
+          // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
+        uriImage = Uri.parse(stringUriImage);
+        imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));}
+
+
         textViewBookTitle.setText(bookTitle);
         textViewPrice.setText(context.getString(R.string.price, NumberFormat.getCurrencyInstance().format(priceToShow)) );
         textViewQuantity.setText(context.getString(R.string.in_stock,quantity));
-        imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));
+
     }
     public Bitmap getBitmapFromUri(Uri uri) {
 

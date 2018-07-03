@@ -125,7 +125,7 @@ public class BookProvider extends ContentProvider {
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
     }
-//TODO: whatch this: https://caster.io/lessons/android-mvvm-pattern-introduction-to-mvvm-for-android-with-data-binding and fil delete and update methods
+//TODO: watch this: https://caster.io/lessons/android-mvvm-pattern-introduction-to-mvvm-for-android-with-data-binding and fil delete and update methods
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         return 0;

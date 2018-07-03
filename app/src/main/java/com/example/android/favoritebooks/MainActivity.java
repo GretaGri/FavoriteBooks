@@ -158,24 +158,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-     //   String [] projection = {BookEntry._ID,
-      //          BookEntry.COLUMN_PRODUCT,
-     //           BookEntry.COLUMN_PRICE,
-       //         BookEntry.COLUMN_QUANTITY,
-      //          BookEntry.COLUMN_PRODUCT_IMAGE_URI};
+        String [] projection = {BookEntry._ID,
+               BookEntry.COLUMN_PRODUCT,
+              BookEntry.COLUMN_PRICE,
+               BookEntry.COLUMN_QUANTITY,
+               BookEntry.COLUMN_PRODUCT_IMAGE_URI};
 
-    //    return new CursorLoader(this, BookEntry.CONTENT_URI,
-      //          projection, null, null, null);
-        return null;
+        return new CursorLoader(this, BookEntry.CONTENT_URI,
+               projection, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-       // bookAdapter.swapCursor(data);
+        bookAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-       // bookAdapter.swapCursor(null);
+        bookAdapter.swapCursor(null);
     }
 }
