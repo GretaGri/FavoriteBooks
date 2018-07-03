@@ -125,10 +125,41 @@ public class BookProvider extends ContentProvider {
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
     }
-//TODO: watch this: https://caster.io/lessons/android-mvvm-pattern-introduction-to-mvvm-for-android-with-data-binding and fil delete and update methods
+
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        // Get writable database
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+        // Track the number of rows that were deleted
+        int rowsDeleted;
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case BOOKS:
+                // Delete all rows that match the selection and selection args
+                rowsDeleted = database.delete(BookEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case BOOKS_ID:
+                // Delete a single row given by the ID in the URI
+                selection = BookEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                //Notify all the listeners that the data has changed for the pet content uri.
+                getContext().getContentResolver().notifyChange(uri, null);
+
+                rowsDeleted = database.delete(BookEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
+        // If 1 or more rows were deleted, then notify all listeners that the data at the
+        // given URI has changed
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        // Return the number of rows deleted
+        return rowsDeleted;
     }
 
     @Override

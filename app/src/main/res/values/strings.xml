@@ -38,4 +38,9 @@
     <string name="main_delete_books_successful">All books deleted</string>
     <string name="main_delete_books_failed">Error with deleting books</string>
     <string name="default_image">default</string>
+    <string name="name_required">Product requires a name</string>
+    <string name="correct_price">Product requires a correct price</string>
+    <string name="correct_quantity">Quantity must be a positive value</string>
+    <string name="provide_supplier">Please, provide supplier</string>
+    <string name="provide_supplier_phone">Please, provide supplier phone number, use only numbers</string>
 </resources>

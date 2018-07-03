@@ -2,10 +2,13 @@ package com.example.android.favoritebooks;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -22,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
@@ -34,7 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditorActivity extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>  {
     public static final String LOG_TAG = EditorActivity.class.getSimpleName();
     private static final int CALL_PHONE_REQUEST = 0;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -43,6 +47,9 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     private String imageUri;
     private ActivityEditorBinding binding;
     private int quantity;
+
+    //boolean for checking if book details have changed and needs to be saved before quitting
+    private boolean bookHasChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,14 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding.buttonPickImage.setOnClickListener(this);
         binding.buttonDecrease.setOnClickListener(this);
         binding.buttonIncrease.setOnClickListener(this);
+
+        binding.editName.setOnTouchListener(mTouchListener);
+        binding.editDescription.setOnTouchListener(mTouchListener);
+        binding.editPrice.setOnTouchListener(mTouchListener);
+        binding.editQuantity.setOnTouchListener(mTouchListener);
+        binding.editSupplier.setOnTouchListener(mTouchListener);
+        binding.editPhone.setOnTouchListener(mTouchListener);
+        binding.buttonPickImage.setOnTouchListener(mTouchListener);
     }
 
     @Override
@@ -85,12 +100,44 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void insertBook() {
+
+        // Check that the product name is not null
         String productName = binding.editName.getText().toString().trim();
+        if (productName.equals("")) {
+            Toast.makeText(this, R.string.name_required, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Description is optional
         String productDescription = binding.editDescription.getText().toString().trim();
+
+        // Check that the price is not null and valid
         Integer productPrice = Integer.parseInt(binding.editPrice.getText().toString());
+        if (binding.editPrice.getText().toString().equals("") || productPrice>0) {
+            Toast.makeText(this, R.string.correct_price, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Check that the quantity is valid
         Integer productQuantity = Integer.parseInt(binding.editQuantity.getText().toString().trim());
+        if (binding.editQuantity.getText().toString().equals("") || productQuantity < 0) {
+            Toast.makeText(this, R.string.correct_quantity, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Check that the supplier is not null
         String supplierName = binding.editSupplier.getText().toString().trim();
+        if (supplierName.equals("")) {
+            Toast.makeText(this, R.string.provide_supplier, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Check that the supplier is not null
         Long supplierPhoneNumber = Long.parseLong(binding.editPhone.getText().toString().trim());
+        if (binding.editPhone.getText().toString().equals("")|| supplierPhoneNumber < 0) {
+            Toast.makeText(this, R.string.provide_supplier_phone, Toast.LENGTH_LONG).show();
+            return;
+        }
 
         BookDbHelper DbHelper = new BookDbHelper(this);
 
@@ -105,6 +152,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         values.put(BookEntry.COLUMN_QUANTITY, productQuantity);
         values.put(BookEntry.COLUMN_SUPPLIER_NAME, supplierName);
         values.put(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER, supplierPhoneNumber);
+        if(imageUri.equals("")){imageUri=getString(R.string.default_image);}
         values.put(BookEntry.COLUMN_PRODUCT_IMAGE_URI,imageUri);
 
 
@@ -116,6 +164,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         else
             Toast.makeText(this, getString(R.string.product_saved, newRowId), Toast.LENGTH_LONG).show();
 
+        //Exit activity
+        finish();
     }
 
     @Override
@@ -134,8 +184,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.action_save:
                 // Save product to database
                 insertBook();
-                //Exit activity
-                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -150,6 +198,13 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         return super.onOptionsItemSelected(item);
     }
 
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            bookHasChanged = true;
+            return false;
+        }
+    };
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -326,6 +381,21 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
                 matrix, true);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }
 

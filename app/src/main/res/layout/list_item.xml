@@ -6,7 +6,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:descendantFocusability="blocksDescendants">
 
     <!-- A CardView that contains a TextView android:foreground="@drawable/custom_selector"-->
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -18,6 +19,7 @@
         android:backgroundTint="@color/colorBackground"
         android:clickable="true"
         android:focusable="true"
+
         card_view:cardCornerRadius="@dimen/card_corner_radius">
 
         <RelativeLayout

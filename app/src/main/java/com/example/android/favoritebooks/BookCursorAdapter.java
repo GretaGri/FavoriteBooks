@@ -68,6 +68,7 @@ public class BookCursorAdapter extends CursorAdapter{
         if (stringUriImage != null && !stringUriImage.equals(context.getString(R.string.default_image))){
           // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
         uriImage = Uri.parse(stringUriImage);
+        Log.d (LOG_TAG, "Image uri is: " + uriImage);
         imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));}
 
 
@@ -83,8 +84,8 @@ public class BookCursorAdapter extends CursorAdapter{
 
         // Get the dimensions of the View
         // Source: https://developer.android.com/training/camera/photobasics#TaskScalePhoto
-        int targetW = imageViewProduct.getWidth();
-        int targetH = imageViewProduct.getHeight();
+        int targetW = 360; //imageViewProduct.getWidth();
+        int targetH = 360;  //imageViewProduct.getHeight();
 
         InputStream input = null;
         try {
