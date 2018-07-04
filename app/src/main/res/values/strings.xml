@@ -13,7 +13,7 @@
     <string name="name_hint">Name</string>
     <string name="product_description_hint">Your product description</string>
     <string name="product_price_hint">Product price in cents</string>
-    <string name="quantity_hint">Default value 1</string>
+    <string name="quantity_hint">Default value 0</string>
     <string name="supplier_name_hint">Supplier name</string>
     <string name="add_new_book">Add new book</string>
     <string name="use_only_numbers">Use only numbers</string>

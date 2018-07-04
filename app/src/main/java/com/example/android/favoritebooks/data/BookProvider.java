@@ -234,7 +234,7 @@ public class BookProvider extends ContentProvider {
             int rows = db.update(BookEntry.TABLE_NAME, values, selection, selectionArgs);
             // Return the number of rows that were affected
 
-            //Notify all the listeners that the data has changed for the pet content uri.
+            //Notify all the listeners that the data has changed for the book content uri.
             if (rows != 0) {
                 getContext().getContentResolver().notifyChange(uri, null);
             }

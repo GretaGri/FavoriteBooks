@@ -28,12 +28,10 @@ import java.text.NumberFormat;
  * Created by Greta Grigutė on 2018-07-02.
  */
 public class BookCursorAdapter extends CursorAdapter{
-   public static final String LOG_TAG = BookCursorAdapter.class.getSimpleName();
-   private ImageView imageViewProduct;
-   private Uri uriImage;
-   private Context mContext;
-   private Integer quantity;
-   private TextView textViewQuantity;
+    public static final String LOG_TAG = BookCursorAdapter.class.getSimpleName();
+    private ImageView imageViewProduct;
+    private Uri uriImage;
+    private Context mContext;
 
     // Constructor
     public BookCursorAdapter(Context context, Cursor c) {
@@ -56,49 +54,51 @@ public class BookCursorAdapter extends CursorAdapter{
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         // Fill out this method
         // Find fields to populate in inflated template
         TextView textViewBookTitle = view.findViewById(R.id.text_view_book_title);
         TextView textViewPrice = view.findViewById(R.id.text_view_price);
-        textViewQuantity = view.findViewById(R.id.text_view_in_stock);
-        imageViewProduct = view.findViewById(R.id.list_item_image);
+        TextView textViewQuantity = view.findViewById(R.id.text_view_in_stock);
+        ImageView imageViewProduct = view.findViewById(R.id.list_item_image);
         RelativeLayout buttonBuy = view.findViewById(R.id.buy_button);
 
         // Extract properties from cursor
         String bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT));
         Integer price = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRICE));
         Double priceToShow = (double)price/100;
-        quantity = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
+        final int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
         String stringUriImage = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_IMAGE_URI));
 
         // Populate fields with extracted properties
         if (stringUriImage != null && !stringUriImage.equals(context.getString(R.string.default_image))){
-          // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
-        uriImage = Uri.parse(stringUriImage);
-        Log.d (LOG_TAG, "Image uri is: " + uriImage);
-        imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));}
+            // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
+            uriImage = Uri.parse(stringUriImage);
+            Log.d (LOG_TAG, "Image uri is: " + uriImage);
+            imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));}
 
 
         textViewBookTitle.setText(bookTitle);
         textViewPrice.setText(context.getString(R.string.price, NumberFormat.getCurrencyInstance().format(priceToShow)) );
-        textViewQuantity.setText(context.getString(R.string.in_stock,quantity));
+        textViewQuantity.setText(context.getString(R.string.in_stock, quantity));
         final int id = cursor.getInt(cursor.getColumnIndex(BookEntry._ID));
 
         buttonBuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (quantity > 0){
-                    int finQuantity = quantity--;
-                    //Getting the URI with the append of the ID for the row
+                    int finQuantity = quantity-1;
+
+//Getting the URI with the append of the ID for the row
                     Uri quantityUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
 
-                    //update the value
+//update the value
                     ContentValues values = new ContentValues();
                     values.put(BookEntry.COLUMN_QUANTITY, finQuantity);
                     mContext.getContentResolver().update(quantityUri, values, null, null);
-                    textViewQuantity.setText(mContext.getString(R.string.in_stock,finQuantity));}
-                    else Toast.makeText(mContext, "Out of stock!", Toast.LENGTH_LONG).show();
+                }
+                else Toast.makeText(mContext, "Out of stock!", Toast.LENGTH_LONG).show();
             }
         });
     }

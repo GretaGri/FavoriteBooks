@@ -285,6 +285,18 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 if (!bookHasChanged) {
                     NavUtils.navigateUpFromSameTask(this);
                     return true;
+                } else { DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // User clicked "Discard" button, close the current activity.
+                                finish();
+                            }
+                        };
+
+                // Show dialog that there are unsaved changes
+                showUnsavedChangesDialog(discardButtonClickListener);
+                return true;
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -429,7 +441,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             if (resultData != null) {
                 uriForImage = resultData.getData();
                 Log.i(LOG_TAG, "Uri: " + uriForImage.toString());
-//                binding.bookImage.setImageBitmap(getBitmapFromUri(uriForImage));
+               binding.bookImage.setImageBitmap(getBitmapFromUri(uriForImage));
                 imageUri = uriForImage.toString();
             }
         }
