@@ -17,13 +17,11 @@
     <string name="supplier_name_hint">Supplier name</string>
     <string name="add_new_book">Add new book</string>
     <string name="use_only_numbers">Use only numbers</string>
-    <string name="table_contains">The books table contains %1$d books.\n\n</string>
     <string name="fault_in_stars">The Fault In Our Stars</string>
     <string name="description_fault_in_stars">John Green. Love and pain</string>
     <string name="supplier_fault_in_stars">Alma littera</string>
-    <string name="log_dummy_values">Dummy values inserted:</string>
     <string name="error_saving_data">Error with saving products</string>
-    <string name="product_saved">Product saved with id %1$d</string>
+    <string name="product_saved">Product saved</string>
     <string name="cont_desc_editor_book">Flowers and open book</string>
     <string name="where_are_books">Where are my favorite books?</string>
     <string name="add_a_book">Get started by adding a book</string>
@@ -53,4 +51,5 @@
     <string name="editor_error_deleting">Error with deleting book</string>
     <string name="editor_deleted_successfully">Book deleted successfully</string>
     <string name="delete_book">Delete this book?</string>
+    <string name="out_of_stock">Out of stock!</string>
 </resources>

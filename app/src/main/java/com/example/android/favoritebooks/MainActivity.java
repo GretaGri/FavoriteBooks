@@ -22,9 +22,7 @@ import android.widget.Toast;
 import com.example.android.favoritebooks.data.BookContract.BookEntry;
 import com.example.android.favoritebooks.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
-
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID = 0;
 
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         // Setup FAB to open EditorActivity
-       binding.fab.setOnClickListener(new View.OnClickListener() {
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
@@ -52,11 +50,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         binding.listViewBooks.setEmptyView(binding.emptyView);
 
         // Setup cursor adapter using cursor
-        bookAdapter = new BookCursorAdapter(this,null);
+        bookAdapter = new BookCursorAdapter(this, null);
 
         // Attach cursor adapter to the ListView
-       binding.listViewBooks.setAdapter(bookAdapter);
+        binding.listViewBooks.setAdapter(bookAdapter);
 
+        // Setup when clicked on list item to open EditorActivity with item details
         binding.listViewBooks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -114,9 +113,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
-    private void deleteAll(){
+    private void deleteAll() {
         showDeleteConfirmationDialog();
     }
+
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the book.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -158,14 +158,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String [] projection = {BookEntry._ID,
-               BookEntry.COLUMN_PRODUCT,
-              BookEntry.COLUMN_PRICE,
-               BookEntry.COLUMN_QUANTITY,
-               BookEntry.COLUMN_PRODUCT_IMAGE_URI};
+        String[] projection = {BookEntry._ID,
+                BookEntry.COLUMN_PRODUCT,
+                BookEntry.COLUMN_PRICE,
+                BookEntry.COLUMN_QUANTITY,
+                BookEntry.COLUMN_PRODUCT_IMAGE_URI};
 
         return new CursorLoader(this, BookEntry.CONTENT_URI,
-               projection, null, null, null);
+                projection, null, null, null);
     }
 
     @Override

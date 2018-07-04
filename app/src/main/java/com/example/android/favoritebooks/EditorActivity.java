@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,16 +33,14 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
-import com.example.android.favoritebooks.data.BookContract;
 import com.example.android.favoritebooks.data.BookContract.BookEntry;
-import com.example.android.favoritebooks.data.BookDbHelper;
 import com.example.android.favoritebooks.databinding.ActivityEditorBinding;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class EditorActivity extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>  {
+public class EditorActivity extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = EditorActivity.class.getSimpleName();
     private static final int LOADER_ID = 0;
     private static final int CALL_PHONE_REQUEST = 0;
@@ -64,6 +61,60 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
     //boolean for checking if book details have changed and needs to be saved before quitting
     private boolean bookHasChanged = false;
+    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            bookHasChanged = true;
+            return false;
+        }
+    };
+
+    /**
+     * Rotate an image if required.
+     *
+     * @param bitmap        The image bitmap
+     * @param selectedImage Image URI
+     * @return The resulted Bitmap after manipulation
+     */
+    private static Bitmap rotateImageIfRequired(Context context, Bitmap bitmap, Uri selectedImage) throws IOException {
+        InputStream input = context.getContentResolver().openInputStream(selectedImage);
+        ExifInterface ei;
+        if (Build.VERSION.SDK_INT > 23)
+            ei = new ExifInterface(input);
+        else
+            ei = new ExifInterface(selectedImage.getPath());
+
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+
+        Bitmap rotatedBitmap = null;
+        switch (orientation) {
+
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                rotatedBitmap = rotateImage(bitmap, 90);
+                break;
+
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                rotatedBitmap = rotateImage(bitmap, 180);
+                break;
+
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                rotatedBitmap = rotateImage(bitmap, 270);
+                break;
+
+            case ExifInterface.ORIENTATION_NORMAL:
+            default:
+                rotatedBitmap = bitmap;
+        }
+        return rotatedBitmap;
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
+                matrix, true);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +135,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         binding.buttonPickImage.setOnTouchListener(mTouchListener);
 
         itemUri = getIntent().getData();
-        Log.d("EditorActivity", "The Uri is: " + itemUri);
+
         if (itemUri != null) {
             setTitle(getString(R.string.update_product));
             getLoaderManager().initLoader(LOADER_ID, null, this);
@@ -160,7 +211,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             return;
         }
 
-        // Check that the supplier is not null
+        // Check that the supplier phone number is not null
         Long supplierPhoneNumber = Long.valueOf(0);
         if (!binding.editPhone.getText().toString().equals("")) {
             supplierPhoneNumber = Long.parseLong(binding.editPhone.getText().toString().trim());
@@ -172,7 +223,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
         if (itemUri != null) {
 
-            //Create a new map of values, where column names are the keys
+            // Create a new map of values, where column names are the keys
             // Defines an object to contain the new values to insert
             ContentValues values = new ContentValues();
 
@@ -219,7 +270,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                     TextUtils.isEmpty(binding.editPhone.getText().toString())) {
                 finish();
             } else {
-                //Create a new map of values, where column names are the keys
+                // Create a new map of values, where column names are the keys
                 // Defines an object to contain the new values to insert
                 ContentValues values = new ContentValues();
                 /*
@@ -235,12 +286,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 if (imageUri == null) {
                     imageUri = getString(R.string.default_image);
                 } else {
-                values.put(BookEntry.COLUMN_PRODUCT_IMAGE_URI, imageUri);
+                    values.put(BookEntry.COLUMN_PRODUCT_IMAGE_URI, imageUri);
                 }
 
 
                 newUri = getContentResolver().insert(
-                        BookEntry.CONTENT_URI,   // the pets table content URI
+                        BookEntry.CONTENT_URI,   // the books table content URI
                         values                        // the values to insert
                 );
                 // Show a toast message depending on whether or not the insertion was successful
@@ -285,18 +336,19 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 if (!bookHasChanged) {
                     NavUtils.navigateUpFromSameTask(this);
                     return true;
-                } else { DialogInterface.OnClickListener discardButtonClickListener =
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                // User clicked "Discard" button, close the current activity.
-                                finish();
-                            }
-                        };
+                } else {
+                    DialogInterface.OnClickListener discardButtonClickListener =
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    // User clicked "Discard" button, close the current activity.
+                                    finish();
+                                }
+                            };
 
-                // Show dialog that there are unsaved changes
-                showUnsavedChangesDialog(discardButtonClickListener);
-                return true;
+                    // Show dialog that there are unsaved changes
+                    showUnsavedChangesDialog(discardButtonClickListener);
+                    return true;
                 }
         }
         return super.onOptionsItemSelected(item);
@@ -313,17 +365,9 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         return true;
     }
 
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            bookHasChanged = true;
-            return false;
-        }
-    };
-
     @Override
     public void onBackPressed() {
-        // If the pet hasn't changed, continue with handling back button press
+        // If the book hasn't changed, continue with handling back button press
         if (!bookHasChanged) {
             super.onBackPressed();
             return;
@@ -354,7 +398,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the book.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -390,21 +434,24 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.button_pick_image:
-               // Sources: https://discussions.udacity.com/t/unofficial-how-to-pick-an-image-from-the-gallery/314971
-               // and https://github.com/crlsndrsjmnz/MyShareImageExample
+                // Sources: https://discussions.udacity.com/t/unofficial-how-to-pick-an-image-from-the-gallery/314971
+                // and https://github.com/crlsndrsjmnz/MyShareImageExample
                 selectImage();
                 break;
 
             case R.id.button_increase:
-                if (!binding.editQuantity.getText().toString().equals("")){
-                quantity = Integer.parseInt(binding.editQuantity.getText().toString());
-                quantity++;
-                binding.editQuantity.setText(String.valueOf(quantity));}
+                if (!binding.editQuantity.getText().toString().equals("")) {
+                    quantity = Integer.parseInt(binding.editQuantity.getText().toString());
+                    quantity++;
+                    binding.editQuantity.setText(String.valueOf(quantity));
+                }
                 break;
 
             case R.id.button_decrease:
-                if (!binding.editQuantity.getText().toString().equals("")){if(quantity>0) quantity--;
-                binding.editQuantity.setText(String.valueOf(quantity));}
+                if (!binding.editQuantity.getText().toString().equals("")) {
+                    if (quantity > 0) quantity--;
+                    binding.editQuantity.setText(String.valueOf(quantity));
+                }
                 break;
 
             default:
@@ -412,7 +459,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void selectImage(){
+    public void selectImage() {
         //Source: https://developer.android.com/guide/topics/providers/document-provider#client
         Intent intent;
 
@@ -441,7 +488,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             if (resultData != null) {
                 uriForImage = resultData.getData();
                 Log.i(LOG_TAG, "Uri: " + uriForImage.toString());
-               binding.bookImage.setImageBitmap(getBitmapFromUri(uriForImage));
+                binding.bookImage.setImageBitmap(getBitmapFromUri(uriForImage));
                 imageUri = uriForImage.toString();
             }
         }
@@ -498,51 +545,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     }
-    /**
-     * Rotate an image if required.
-     *
-     * @param bitmap           The image bitmap
-     * @param selectedImage Image URI
-     * @return The resulted Bitmap after manipulation
-     */
-    private static Bitmap rotateImageIfRequired(Context context, Bitmap bitmap, Uri selectedImage) throws IOException {
-        InputStream input = context.getContentResolver().openInputStream(selectedImage);
-        ExifInterface ei;
-        if (Build.VERSION.SDK_INT > 23)
-            ei = new ExifInterface(input);
-        else
-            ei = new ExifInterface(selectedImage.getPath());
-
-        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_UNDEFINED);
-
-        Bitmap rotatedBitmap = null;
-        switch(orientation) {
-
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                rotatedBitmap = rotateImage(bitmap, 90);
-                break;
-
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                rotatedBitmap = rotateImage(bitmap, 180);
-                break;
-
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                rotatedBitmap = rotateImage(bitmap, 270);
-                break;
-
-            case ExifInterface.ORIENTATION_NORMAL:
-            default:
-                rotatedBitmap = bitmap;
-        }
-        return rotatedBitmap;
-    }
-    public static Bitmap rotateImage(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(),
-                matrix, true);
-    }
 
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -551,14 +553,14 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         builder.setMessage(R.string.delete_book);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
-                deletePet();
+                // User clicked the "Delete" button, so delete the book.
+                deleteBook();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the book.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -571,10 +573,10 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /**
-     * Perform the deletion of the pet in the database.
+     * Perform the deletion of the book in the database.
      */
-    private void deletePet() {
-        //delete pet
+    private void deleteBook() {
+        //delete book
         // Defines a variable to contain the number of rows deleted
 // Deletes the words that match the selection criteria
         if (itemUri != null) {
@@ -598,7 +600,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String [] projection = {BookEntry._ID,
+        String[] projection = {BookEntry._ID,
                 BookEntry.COLUMN_PRODUCT,
                 BookEntry.COLUMN_PRODUCT_DESCRIPTION,
                 BookEntry.COLUMN_PRICE,
@@ -615,7 +617,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data == null || data.getCount() == 0) {
             finish();
-        }else {
+        } else {
             data.moveToFirst();
             String productName = data.getString(data.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT));
             String productDescription = data.getString(data.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_DESCRIPTION));
@@ -631,11 +633,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             binding.editQuantity.setText(String.valueOf(quantity));
             binding.editSupplier.setText(supplier);
             binding.editPhone.setText(String.valueOf(phoneNumber));
-            if (imageUri != null && !imageUri.equals(getString(R.string.default_image))){
+            if (imageUri != null && !imageUri.equals(getString(R.string.default_image))) {
                 // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
                 Uri uriImage = Uri.parse(imageUri);
-                Log.d (LOG_TAG, "Image uri is: " + uriImage);
-                binding.bookImage.setImageBitmap(getBitmapFromUri(uriImage));}
+                Log.d(LOG_TAG, "Image uri is: " + uriImage);
+                binding.bookImage.setImageBitmap(getBitmapFromUri(uriImage));
+            }
         }
     }
 

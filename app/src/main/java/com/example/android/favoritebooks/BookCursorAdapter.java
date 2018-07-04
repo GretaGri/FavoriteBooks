@@ -27,7 +27,7 @@ import java.text.NumberFormat;
 /**
  * Created by Greta Grigutė on 2018-07-02.
  */
-public class BookCursorAdapter extends CursorAdapter{
+public class BookCursorAdapter extends CursorAdapter {
     public static final String LOG_TAG = BookCursorAdapter.class.getSimpleName();
     private ImageView imageViewProduct;
     private Uri uriImage;
@@ -66,20 +66,21 @@ public class BookCursorAdapter extends CursorAdapter{
         // Extract properties from cursor
         String bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT));
         Integer price = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRICE));
-        Double priceToShow = (double)price/100;
+        Double priceToShow = (double) price / 100;
         final int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
         String stringUriImage = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_IMAGE_URI));
 
         // Populate fields with extracted properties
-        if (stringUriImage != null && !stringUriImage.equals(context.getString(R.string.default_image))){
-            // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
+        if (stringUriImage != null && !stringUriImage.equals(context.getString(R.string.default_image))) {
             uriImage = Uri.parse(stringUriImage);
-            Log.d (LOG_TAG, "Image uri is: " + uriImage);
-            imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));}
+            imageViewProduct.setImageBitmap(getBitmapFromUri(uriImage));
+        } else {
+            imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
+        }
 
 
         textViewBookTitle.setText(bookTitle);
-        textViewPrice.setText(context.getString(R.string.price, NumberFormat.getCurrencyInstance().format(priceToShow)) );
+        textViewPrice.setText(context.getString(R.string.price, NumberFormat.getCurrencyInstance().format(priceToShow)));
         textViewQuantity.setText(context.getString(R.string.in_stock, quantity));
         final int id = cursor.getInt(cursor.getColumnIndex(BookEntry._ID));
 
@@ -87,18 +88,17 @@ public class BookCursorAdapter extends CursorAdapter{
             @Override
             public void onClick(View v) {
 
-                if (quantity > 0){
-                    int finQuantity = quantity-1;
+                if (quantity > 0) {
+                    int finQuantity = quantity - 1;
 
-//Getting the URI with the append of the ID for the row
+                    //Getting the URI with the append of the ID for the row
                     Uri quantityUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
 
-//update the value
+                    //update the value
                     ContentValues values = new ContentValues();
                     values.put(BookEntry.COLUMN_QUANTITY, finQuantity);
                     mContext.getContentResolver().update(quantityUri, values, null, null);
-                }
-                else Toast.makeText(mContext, "Out of stock!", Toast.LENGTH_LONG).show();
+                } else Toast.makeText(mContext, R.string.out_of_stock, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -110,8 +110,8 @@ public class BookCursorAdapter extends CursorAdapter{
 
         // Get the dimensions of the View
         // Source: https://developer.android.com/training/camera/photobasics#TaskScalePhoto
-        int targetW = 360; //imageViewProduct.getWidth();
-        int targetH = 360;  //imageViewProduct.getHeight();
+        int targetW = 360; // as image is set to 90*90 dp
+        int targetH = 360;  // as image is set to 90*90 dp
 
         InputStream input = null;
         try {

@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:clickable="true"
             android:focusable="true"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
 
         <!-- Empty view for the list -->
         <RelativeLayout
@@ -30,7 +30,7 @@
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="30dp"
-                android:src="@drawable/girl"/>
+                android:src="@drawable/girl" />
 
             <TextView
                 android:id="@+id/empty_title_text"
@@ -41,7 +41,7 @@
                 android:fontFamily="cursive"
                 android:paddingTop="@dimen/padding_top_medium"
                 android:text="@string/where_are_books"
-                android:textSize="26sp"/>
+                android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/empty_subtitle_text"
@@ -50,11 +50,11 @@
                 android:layout_below="@+id/empty_title_text"
                 android:layout_centerHorizontal="true"
                 android:fontFamily="serif"
-                android:textStyle="italic"
                 android:paddingTop="@dimen/padding_top_small"
                 android:text="@string/add_a_book"
+                android:textColor="@color/colorAccent"
                 android:textSize="16sp"
-                android:textColor="@color/colorAccent"/>
+                android:textStyle="italic" />
         </RelativeLayout>
 
         <android.support.design.widget.FloatingActionButton
