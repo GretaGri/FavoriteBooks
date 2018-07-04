@@ -1,5 +1,7 @@
 package com.example.android.favoritebooks;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.favoritebooks.data.BookContract.BookEntry;
 
@@ -28,6 +32,8 @@ public class BookCursorAdapter extends CursorAdapter{
    private ImageView imageViewProduct;
    private Uri uriImage;
    private Context mContext;
+   private Integer quantity;
+   private TextView textViewQuantity;
 
     // Constructor
     public BookCursorAdapter(Context context, Cursor c) {
@@ -55,13 +61,15 @@ public class BookCursorAdapter extends CursorAdapter{
         // Find fields to populate in inflated template
         TextView textViewBookTitle = view.findViewById(R.id.text_view_book_title);
         TextView textViewPrice = view.findViewById(R.id.text_view_price);
-        TextView textViewQuantity = view.findViewById(R.id.text_view_in_stock);
+        textViewQuantity = view.findViewById(R.id.text_view_in_stock);
         imageViewProduct = view.findViewById(R.id.list_item_image);
+        RelativeLayout buttonBuy = view.findViewById(R.id.buy_button);
+
         // Extract properties from cursor
         String bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT));
         Integer price = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRICE));
         Double priceToShow = (double)price/100;
-        Integer quantity = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
+        quantity = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
         String stringUriImage = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_IMAGE_URI));
 
         // Populate fields with extracted properties
@@ -75,8 +83,26 @@ public class BookCursorAdapter extends CursorAdapter{
         textViewBookTitle.setText(bookTitle);
         textViewPrice.setText(context.getString(R.string.price, NumberFormat.getCurrencyInstance().format(priceToShow)) );
         textViewQuantity.setText(context.getString(R.string.in_stock,quantity));
+        final int id = cursor.getInt(cursor.getColumnIndex(BookEntry._ID));
 
+        buttonBuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (quantity > 0){
+                    int finQuantity = quantity--;
+                    //Getting the URI with the append of the ID for the row
+                    Uri quantityUri = ContentUris.withAppendedId(BookEntry.CONTENT_URI, id);
+
+                    //update the value
+                    ContentValues values = new ContentValues();
+                    values.put(BookEntry.COLUMN_QUANTITY, finQuantity);
+                    mContext.getContentResolver().update(quantityUri, values, null, null);
+                    textViewQuantity.setText(mContext.getString(R.string.in_stock,finQuantity));}
+                    else Toast.makeText(mContext, "Out of stock!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
     public Bitmap getBitmapFromUri(Uri uri) {
 
         if (uri == null || uri.toString().isEmpty())

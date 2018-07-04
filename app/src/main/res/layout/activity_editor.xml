@@ -216,6 +216,7 @@
                 android:id="@+id/book_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
                 android:contentDescription="@string/cont_desc_editor_book"
                 android:scaleType="centerCrop"
                 android:src="@drawable/default_book_nathan_dumlao_unsplash"

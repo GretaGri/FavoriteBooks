@@ -43,4 +43,14 @@
     <string name="correct_quantity">Quantity must be a positive value</string>
     <string name="provide_supplier">Please, provide supplier</string>
     <string name="provide_supplier_phone">Please, provide supplier phone number, use only numbers</string>
+    <string name="update_product">Update product</string>
+    <string name="add_product">Add a new product</string>
+    <string name="error_updating_book">Error with updating book</string>
+    <string name="update_successful">Book updated successfully</string>
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+    <string name="editor_error_deleting">Error with deleting book</string>
+    <string name="editor_deleted_successfully">Book deleted successfully</string>
+    <string name="delete_book">Delete this book?</string>
 </resources>
