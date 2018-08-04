@@ -166,11 +166,11 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         // Check that the supplier phone number is not null
-        Long supplierPhoneNumber = Long.valueOf(0);
+        String supplierPhoneNumber = "";
         if (!binding.editPhone.getText().toString().equals("")) {
-            supplierPhoneNumber = Long.parseLong(binding.editPhone.getText().toString().trim());
+            supplierPhoneNumber = binding.editPhone.getText().toString().trim();
         }
-        if (binding.editPhone.getText().toString().equals("") || supplierPhoneNumber < 0) {
+        if (binding.editPhone.getText().toString().equals("")) {
             Toast.makeText(this, R.string.provide_supplier_phone, Toast.LENGTH_LONG).show();
             return;
         }
@@ -577,7 +577,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             int price = data.getInt(data.getColumnIndexOrThrow(BookEntry.COLUMN_PRICE));
             int quantity = data.getInt(data.getColumnIndexOrThrow(BookEntry.COLUMN_QUANTITY));
             String supplier = data.getString(data.getColumnIndexOrThrow(BookEntry.COLUMN_SUPPLIER_NAME));
-            Long phoneNumber = data.getLong(data.getColumnIndexOrThrow(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER));
+            String phoneNumber = data.getString(data.getColumnIndexOrThrow(BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER));
             String imageUri = data.getString(data.getColumnIndexOrThrow(BookEntry.COLUMN_PRODUCT_IMAGE_URI));
 
             binding.editName.setText(productName);
@@ -585,7 +585,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             binding.editPrice.setText(String.valueOf(price));
             binding.editQuantity.setText(String.valueOf(quantity));
             binding.editSupplier.setText(supplier);
-            binding.editPhone.setText(String.valueOf(phoneNumber));
+            binding.editPhone.setText(phoneNumber);
             if (imageUri != null && !imageUri.equals(getString(R.string.default_image))) {
                 // imageViewProduct.setImageResource(R.drawable.default_book_nathan_dumlao_unsplash);
                 Uri uriImage = Uri.parse(imageUri);

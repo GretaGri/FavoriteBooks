@@ -21,7 +21,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             BookEntry.COLUMN_PRICE + " INTEGER NOT NULL, " +
             BookEntry.COLUMN_QUANTITY + " INTEGER DEFAULT 0, " +
             BookEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, " +
-            BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER + " LONG NOT NULL, " +
+            BookEntry.COLUMN_SUPPLIER_PHONE_NUMBER + " VARCHAR NOT NULL, " +
             BookEntry.COLUMN_PRODUCT_IMAGE_URI + " TEXT DEFAULT 'default'" + ")";
 
 
